@@ -31,7 +31,7 @@ AUDIO_FEATURE_ENABLED_FM := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 
 # Bluetooth
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/xiaomi/armani/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/xiaomi/dior/bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT := true
@@ -57,19 +57,21 @@ BOARD_PERSISTIMAGE_PARTITION_SIZE  := 33554432
 BOARD_FLASH_BLOCK_SIZE             := 131072
 
 # FM
-TARGET_QCOM_NO_FM_FIRMWARE := true
+BOARD_HAVE_QCOM_FM := true
 
 # Fonts
 EXTENDED_FONT_FOOTPRINT := true
 
 # GPS
-TARGET_GPS_HAL_PATH := device/xiaomi/armani/gps
+TARGET_GPS_HAL_PATH := device/xiaomi/dior/gps
 TARGET_PROVIDES_GPS_LOC_API := true
 
 # Graphics
 TARGET_USES_C2D_COMPOSITION := true
 TARGET_USES_ION := true
 USE_OPENGL_RENDERER := true
+HAVE_ADRENO_SOURCE:= false
+TARGET_USES_POST_PROCESSING := true
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
 OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
 
@@ -84,22 +86,26 @@ MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
 
 # Hardware tunables
-BOARD_HARDWARE_CLASS := device/xiaomi/armani/cmhw/
+BOARD_HARDWARE_CLASS := device/xiaomi/dior/cmhw/
 
 # Init
 TARGET_UNIFIED_DEVICE := true
 TARGET_INIT_VENDOR_LIB := libinit_msm
-TARGET_LIBINIT_DEFINES_FILE := device/xiaomi/armani/init/init_armani.c
+TARGET_LIBINIT_DEFINES_FILE := device/xiaomi/dior/init/init_dior.c
 
 # Kernel
-TARGET_KERNEL_SOURCE := kernel/xiaomi/armani
-TARGET_KERNEL_CONFIG := cyanogenmod_armani_defconfig
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=armani user_debug=31 msm_rtb.filter=0x37
+TARGET_KERNEL_SOURCE := kernel/xiaomi/dior
+TARGET_KERNEL_CONFIG := dior_xenon_defconfig
+BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=dior user_debug=31 msm_rtb.filter=0x37
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_SEPARATED_DT := true
-BOARD_CUSTOM_BOOTIMG_MK := device/xiaomi/armani/mkbootimg.mk
-BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+BOARD_CUSTOM_BOOTIMG_MK := device/xiaomi/dior/mkbootimg.mk
+BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x02000000 --tags_offset 0x01e00000
+
+# Camera
+USE_CAMERA_STUB := true
+USE_DEVICE_SPECIFIC_CAMERA := true
 
 # Lights
 TARGET_PROVIDES_LIBLIGHT := true
@@ -118,7 +124,7 @@ TARGET_POWERHAL_VARIANT := qcom
 BOARD_USES_QCOM_HARDWARE := true
 
 # Recovery
-TARGET_RECOVERY_FSTAB := device/xiaomi/armani/rootdir/etc/fstab.armani
+TARGET_RECOVERY_FSTAB := device/xiaomi/dior/rootdir/etc/fstab.dior
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -127,7 +133,7 @@ TARGET_USERIMAGES_USE_F2FS := true
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 
-BOARD_SEPOLICY_DIRS += device/xiaomi/armani/sepolicy
+BOARD_SEPOLICY_DIRS += device/xiaomi/dior/sepolicy
 
 # Time services
 BOARD_USES_QC_TIME_SERVICES := true
@@ -149,4 +155,4 @@ WPA_SUPPLICANT_VERSION := VER_0_8_X
 TARGET_USES_QCOM_WCNSS_QMI := true
 
 # inherit from the proprietary version
--include vendor/xiaomi/armani/BoardConfigVendor.mk
+-include vendor/xiaomi/dior/BoardConfigVendor.mk

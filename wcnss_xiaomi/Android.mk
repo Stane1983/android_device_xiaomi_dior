@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_DEVICE),armani)
+ifeq ($(TARGET_DEVICE),dior)
 
 LOCAL_PATH := $(call my-dir)
 

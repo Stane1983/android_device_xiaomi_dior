@@ -16,7 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 
-ifeq ($(TARGET_DEVICE),armani)
+ifeq ($(TARGET_DEVICE),dior)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
 

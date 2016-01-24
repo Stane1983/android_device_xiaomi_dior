@@ -25,7 +25,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import init.armani.usb.rc
+import init.dior.usb.rc
 
 on early-init
     mount debugfs debugfs /sys/kernel/debug
@@ -65,12 +65,8 @@ on init
     symlink /storage/usbdisk /usb_storage
 
 on fs
-    mount_all fstab.armani
+    mount_all fstab.dior
     restorecon_recursive /persist
-
-    # Activate ZRAM
-    swapon_all fstab.armani
-    write /proc/sys/vm/page-cluster 0
 
     setprop ro.crypto.fuse_sdcard true
 
@@ -91,8 +87,21 @@ on boot
     chown system system /sys/class/leds/blue/duty_pcts
     chown system system /sys/class/leds/blue/ramp_step_ms
 
+    chown system system /sys/class/leds/torch-light/brightness
+    chown system system /sys/class/leds/button-backlight/brightness
+
+	# Key disabler
+    chown root system /sys/bus/i2c/drivers/atmel_mxt_ts/5-004b/keys_off
+    chmod 0664 /sys/bus/i2c/drivers/atmel_mxt_ts/5-004b/keys_off
+    restorecon /sys/bus/i2c/drivers/atmel_mxt_ts/5-004b/keys_off
+
     chown bluetooth bluetooth /sys/module/hci_smd/parameters/hcismd_set
     chmod 0660 /sys/module/hci_smd/parameters/hcismd_set
+
+    write /sys/bus/msm_subsys/devices/subsys0/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys2/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys3/restart_level related
 
     # Create QMUX deamon socket area
     mkdir /dev/socket/qmux_radio 0770 radio radio
@@ -166,8 +175,7 @@ on post-fs-data
     setprop vold.post_fs_data_done 1
 
     # Adjust vibrator amplitude
-    write /sys/class/timed_output/vibrator/amp 90
-    chown root system /sys/class/timed_output/vibrator/amp
+    chown system system /sys/class/timed_output/vibrator/amp
     chmod 0664 /sys/class/timed_output/vibrator/amp
     restorecon /sys/class/timed_output/vibrator/amp
 
@@ -311,7 +319,7 @@ service ril-daemon2 /system/bin/rild -c 2
     group radio cache inet misc audio sdcard_rw qcom_oncrpc qcom_diag log
     disabled
 
-on property:persist.radio.multisim.config=dsds
+on property:persist.radio.multisim.config=none
     start ril-daemon2
 
 service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
@@ -396,6 +404,7 @@ on charger
     write /sys/devices/system/cpu/cpu3/online 0
 
 on property:sys.boot_completed=1
+    write /sys/block/mmcblk0/queue/scheduler bfq
     # Enable Power modes and set the CPU Freq Sampling rates
     write /sys/module/lpm_levels/enable_low_power/l2 4
     write /sys/module/msm_pm/modes/cpu0/power_collapse/suspend_enabled 1
@@ -484,10 +493,10 @@ on property:sys.perf.profile=2
     write /sys/devices/system/cpu/cpu1/online 1
     write /sys/devices/system/cpu/cpu2/online 1
     write /sys/devices/system/cpu/cpu3/online 1
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor performance
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor performance
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor performance
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor interactive
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1593600
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 1593600
@@ -495,3 +504,20 @@ on property:sys.perf.profile=2
     write /sys/devices/system/cpu/sched_mc_power_savings 0
     write /sys/class/kgsl/kgsl-3d0/devfreq/governor performance
     write /sys/class/devfreq/qcom,cpubw.64/governor performance
+    start mpdecision
+
+# Set different perfer network type for different phone type
+on property:ro.boot.modem=LTETD
+    setprop ro.telephony.default_network 17
+on property:ro.boot.modem=LTEW
+    setprop ro.telephony.default_network 9
+on property:ro.boot.modem=LTEGLOBAL
+    setprop ro.telephony.default_network 9
+
+# Enable manual network selection function for CMCC
+on property:ro.boot.modem=LTETD
+    setprop persist.radio.rat_on combine
+
+# Enable manual network selection function for CU
+on property:ro.boot.modem=LTEW
+    setprop persist.radio.rat_on combine

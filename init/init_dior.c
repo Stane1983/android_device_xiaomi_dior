@@ -85,20 +85,18 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
         raw_id = strtoul(tmp, NULL, 0);
     }
 
-    property_set("ro.product.device", "armani");
-    property_set("ro.build.product", "armani");
-    property_set("ro.build.description", "armani-user 4.4.4 KTU84P V6.7.1.0.KHCMICH release-keys");
-    property_set("ro.build.fingerprint", "Xiaomi/armani/armani:4.4.4/KTU84P/V6.7.1.0.KHCMICH:user/release-keys");
+    property_set("ro.product.device", "dior");
+    property_set("ro.build.product", "dior");
+    property_set("ro.build.description", "dior-user 4.4.4 KTU84P 5.9.16 release-keys");
+    property_set("ro.build.fingerprint", "Xiaomi/dior/dior:4.4.4/KTU84P/5.9.16:user/release-keys");
 
-    /* HM 1SW  */
-    if (raw_id==2325) {
-        property_set("ro.product.model", "HM 1SW");
-        property_set("ro.telephony.default_network", "0,1");
+    /* HM NOTE LTE  */
+    if (raw_id==2328) {
+        property_set("ro.product.model", "HM NOTE 1LTE");
     }
 
-    /* HM 1SC */
+    /* HM NOTE LTE FDD */
     else {
-        property_set("ro.product.model", "HM 1SC");
-        property_set("ro.telephony.default_network", "7,1");
+        property_set("ro.product.model", "HM NOTE 1LTE TD");
     }
 }
