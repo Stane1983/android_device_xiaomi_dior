@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2013, The Linux Foundation. All rights reserved.
+   Copyright (c) 2015, The Linux Foundation. All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
@@ -28,6 +28,8 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
 
 #include "vendor_init.h"
 #include "property_service.h"
@@ -36,11 +38,38 @@
 
 #include "init_msm.h"
 
+#define RAW_ID_PATH     "/sys/devices/system/soc/soc0/raw_id"
+#define BUF_SIZE         64
+static char tmp[BUF_SIZE];
+
+static int read_file2(const char *fname, char *data, int max_size)
+{
+    int fd, rc;
+
+    if (max_size < 1)
+        return 0;
+
+    fd = open(fname, O_RDONLY);
+    if (fd < 0) {
+        ERROR("failed to open '%s'\n", fname);
+        return 0;
+    }
+
+    rc = read(fd, data, max_size - 1);
+    if ((rc > 0) && (rc < max_size))
+        data[rc] = '\0';
+    else
+        data[0] = '\0';
+    close(fd);
+
+    return 1;
+}
+
 void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *board_type)
 {
     char platform[PROP_VALUE_MAX];
-    char modem[PROP_VALUE_MAX];
     int rc;
+    unsigned long raw_id = -1;
 
     UNUSED(msm_id);
     UNUSED(msm_ver);
@@ -50,18 +79,24 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
     if (!rc || !ISMATCH(platform, ANDROID_TARGET))
         return;
 
-    property_get("ro.boot.modem", modem);
+    /* get raw ID */
+    rc = read_file2(RAW_ID_PATH, tmp, sizeof(tmp));
+    if (rc) {
+        raw_id = strtoul(tmp, NULL, 0);
+    }
 
-    property_set("ro.product.device", "armani");
-    property_set("ro.build.product", "armani");
-    property_set("ro.build.description", "armani-user 4.4.4 KTU84P V7.1.1.0.KHCMICK release-keys");
-    property_set("ro.build.fingerprint", "Xiaomi/armani/armani:4.4.4/KTU84P/V7.1.1.0.KHCMICK:user/release-keys");
+    property_set("ro.product.device", "dior");
+    property_set("ro.build.product", "dior");
+    property_set("ro.build.description", "dior-user 4.4.4 KTU84P 5.9.16 release-keys");
+    property_set("ro.build.fingerprint", "Xiaomi/dior/dior:4.4.4/KTU84P/5.9.16:user/release-keys");
 
-    if (strstr(modem, "HM1AW")) {
-        property_set("ro.product.model", "HM 1SW");
-        property_set("ro.telephony.default_network", "0,1");
-    } else if (strstr(modem, "HM1AC")) {
-        property_set("ro.product.model", "HM 1SC");
-        property_set("ro.telephony.default_network", "7,1");
+    /* HM NOTE LTE  */
+    if (raw_id==2328) {
+        property_set("ro.product.model", "HM NOTE 1LTE");
+    }
+
+    /* HM NOTE LTE FDD */
+    else {
+        property_set("ro.product.model", "HM NOTE 1LTE TD");
     }
 }

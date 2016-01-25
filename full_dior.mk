@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 The CyanogenMod Project
+# Copyright (C) 2015 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,18 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := $(call my-dir)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
-ifeq ($(TARGET_DEVICE),dior)
+# Inherit from hardware-specific part of the product configuration
+$(call inherit-product, device/xiaomi/dior/device.mk)
 
-include $(call all-makefiles-under,$(LOCAL_PATH))
+# Device identifier. This must come after all inclusions.
+PRODUCT_DEVICE := dior
+PRODUCT_BRAND := Xiaomi
+PRODUCT_MODEL := HM NOTE LTE
+PRODUCT_MANUFACTURER := Xiaomi
 
-endif
+PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
+
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    PRODUCT_NAME=dior
