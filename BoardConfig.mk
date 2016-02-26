@@ -24,6 +24,10 @@ TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := cortex-a7
 
+# Flags
+COMMON_GLOBAL_CFLAGS   += -D__ARM_USE_PLD -D__ARM_CACHE_LINE_SIZE=64 -DNO_SECURE_DISCARD -DUSE_RIL_VERSION_10
+COMMON_GLOBAL_CPPFLAGS += -DNO_SECURE_DISCARD -DUSE_RIL_VERSION_10
+
 # Audio
 BOARD_USES_ALSA_AUDIO := true
 AUDIO_FEATURE_ENABLED_FM := true
@@ -41,11 +45,20 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
 # Charger
-BOARD_CHARGER_SHOW_PERCENTAGE := true
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
+# Enable dex-preoptimization to speed up first boot sequence
+ifeq ($(HOST_OS),linux)
+  ifeq ($(TARGET_BUILD_VARIANT),user)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+    endif
+  endif
+endif
+DONT_DEXPREOPT_PREBUILTS := true
+
 # Encryption
-TARGET_HW_DISK_ENCRYPTION := true
+TARGET_HW_DISK_ENCRYPTION := false
 
 # Filesystem
 BOARD_RECOVERY_BLDRMSG_OFFSET		:= 2048
@@ -57,6 +70,11 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE	:= 6241112064 # - 16384 for crypto footer
 TARGET_USERIMAGES_USE_EXT4		:= true
 BOARD_FLASH_BLOCK_SIZE			:= 131072
 
+# CM Hardware
+BOARD_HARDWARE_CLASS := device/xiaomi/dior/cmhw
+
+# No old RPC for prop
+TARGET_NO_RPC := true
 
 # FM
 TARGET_FM_LEGACY_PATCHLOADER := true
@@ -69,13 +87,14 @@ TARGET_GPS_HAL_PATH := device/xiaomi/dior/gps
 TARGET_PROVIDES_GPS_LOC_API := true
 
 # Graphics
-TARGET_USES_C2D_COMPOSITION := true
-TARGET_USES_ION := true
-USE_OPENGL_RENDERER := true
-HAVE_ADRENO_SOURCE:= false
-TARGET_USES_POST_PROCESSING := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
-OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+USE_OPENGL_RENDERER               := true
+TARGET_USES_C2D_COMPOSITION       := true
+TARGET_USE_COMPAT_GRALLOC_PERFORM := true
+TARGET_USES_ION                   := true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS   := 3
+OVERRIDE_RS_DRIVER                := libRSDriver_adreno.so
+VSYNC_EVENT_PHASE_OFFSET_NS       := 7500000
+SF_VSYNC_EVENT_PHASE_OFFSET_NS    := 5000000
 
 # Shader cache config options
 # Maximum size of the GLES Shaders that can be cached for reuse.
@@ -87,16 +106,13 @@ MAX_EGL_CACHE_KEY_SIZE := 12*1024
 # of the device.
 MAX_EGL_CACHE_SIZE := 2048*1024
 
-# Hardware tunables
-BOARD_HARDWARE_CLASS := device/xiaomi/dior/cmhw
-
 # Init
 TARGET_UNIFIED_DEVICE := true
 TARGET_INIT_VENDOR_LIB := libinit_msm
 TARGET_LIBINIT_DEFINES_FILE := device/xiaomi/dior/init/init_dior.cpp
 
 # Kernel
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
+# TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-linux-androideabi-
 TARGET_KERNEL_SOURCE := kernel/xiaomi/dior
 TARGET_KERNEL_CONFIG := cyanogenmod_dior_defconfig
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=dior user_debug=31 msm_rtb.filter=0x37 androidboot.selinux=permissive

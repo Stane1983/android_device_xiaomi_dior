@@ -16,9 +16,11 @@
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
-PRODUCT_AAPT_CONFIG := normal hdpi xhdpi
+# Screen density
+PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
+# Boot animation
 TARGET_SCREEN_HEIGHT := 1280
 TARGET_SCREEN_WIDTH := 720
 
@@ -89,8 +91,12 @@ PRODUCT_PACKAGES += \
     gralloc.msm8226 \
     hwcomposer.msm8226 \
     memtrack.msm8226 \
-    liboverlay \
-    libemoji
+    liboverlay
+
+# Graphics
+PRODUCT_PACKAGES += \
+	libGLES_android \
+	libstlport
 
 # DRM
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -248,6 +254,8 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
+	WCNSS_cfg.dat \
+	WCNSS_qcom_cfg.ini \
     hostapd_default.conf \
     p2p_supplicant_overlay.conf \
     wpa_supplicant_overlay.conf \
@@ -255,10 +263,6 @@ PRODUCT_PACKAGES += \
     WCNSS_qcom_wlan_nv_h3gbl.bin \
     WCNSS_qcom_wlan_nv_h3td.bin \
     WCNSS_qcom_wlan_nv_h3w.bin
-
-PRODUCT_COPY_FILES += \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-    kernel/xiaomi/dior/drivers/staging/prima/firmware_bin/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
 PRODUCT_PACKAGES += \
     dhcpcd.conf \
